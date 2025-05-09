@@ -1,155 +1,91 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8">
   <title>QR Chance - Gagne ta bière</title>
   <style>
     body {
-      margin: 0;
-      padding: 0;
-      background-color: #0a0f1c;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #00ffe0;
+      background: #0a0f1c;
+      color: #ffffff;
       text-align: center;
+      font-family: Arial, sans-serif;
+      padding-top: 20px;
     }
-
-    .container {
-      padding-top: 30px;
-    }
-
     img {
-      max-width: 80%;
+      max-width: 90%;
       height: auto;
-      border-radius: 12px;
-      box-shadow: 0 0 15px #00ffe0;
+      border-radius: 20px;
+      box-shadow: 0 0 15px #00ffcc;
     }
-
-    h1 {
-      margin-top: 20px;
-      font-size: 26px;
-      color: white;
-    }
-
-    p {
-      color: #ccc;
-      font-size: 15px;
-      margin-bottom: 10px;
-    }
-
     #timer {
-      font-size: 40px;
-      margin: 20px 0;
-      font-weight: bold;
-    }
-
-    #result {
-      font-size: 24px;
+      font-size: 48px;
       margin-top: 20px;
-      font-weight: bold;
     }
-
-    #btn {
-      display: none;
-      padding: 14px 24px;
-      font-size: 18px;
-      background-color: #00ffe0;
+    #result {
+      font-size: 28px;
+      margin-top: 30px;
+      color: #00ffcc;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 22px;
+      margin-top: 30px;
       border: none;
-      color: #0a0f1c;
-      border-radius: 5px;
+      background: #00ffcc;
+      color: #000;
       cursor: pointer;
-    }
-
-    .message {
-      margin-top: 40px;
-      font-size: 18px;
-      color: #00ffe0;
+      display: none;
+      border-radius: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <img src="qrchance.png" alt="QR Chance">
-    <h1>Scanne & tente ta chance !</h1>
-    <p>Si tu cliques pile à 00:00, tu gagnes une bière à -50% !</p>
-
-    <div id="timer">--:--</div>
-    <button id="btn" onclick="tryLuck()">Je tente ma chance</button>
-    <div id="result"></div>
-    <div class="message" id="messageInfo"></div>
-  </div>
-
-  <script>
-    const btn = document.getElementById("btn");
-    const result = document.getElementById("result");
-    const timer = document.getElementById("timer");
-    const messageInfo = document.getElementById("messageInfo");
-
-    const sessions = [
-      { hour: 18, minuteStart: 0, minuteEnd: 30 },
-      { hour: 19, minuteStart: 0, minuteEnd: 30 },
-      { hour: 20, minuteStart: 0, minuteEnd: 30 },
-      { hour: 22, minuteStart: 0, minuteEnd: 30 },
+  <img src="qrchance.png" alt="QR Chance">
+  <h1>Scanne & tente ta chance !</h1>
+  <p>Si tu cliques pile à 00:00, tu gagnes une bière à -50% !</p>
+  <div id="timer">--:--</div>
+  <button id="claimBtn" onclick="reveal()">Je tente ma chance</button>
+  <div id="result"></div>  <script>
+    const activeSlots = [
+      [0, 2], [2, 4], [4, 6], [6, 8], [8, 10],
+      [10, 12], [12, 14], [14, 16], [16, 18], [18, 20]
     ];
 
-    function isInSession(now) {
-      return sessions.some(session =>
-        now.getHours() === session.hour &&
-        now.getMinutes() >= session.minuteStart &&
-        now.getMinutes() < session.minuteEnd
-      );
+    function isWithinActiveSlot(minute) {
+      return activeSlots.some(slot => minute >= slot[0] && minute < slot[1]);
     }
 
-    function getRemainingTime(now) {
-      let session = sessions.find(s =>
-        now.getHours() === s.hour &&
-        now.getMinutes() >= s.minuteStart &&
-        now.getMinutes() < s.minuteEnd
-      );
-      if (!session) return null;
-
-      const end = new Date(now);
-      end.setMinutes(session.minuteEnd, 0, 0);
-      const diff = end - now;
-      return Math.floor(diff / 1000);
-    }
-
-    function formatTime(sec) {
-      const m = String(Math.floor(sec / 60)).padStart(2, '0');
-      const s = String(sec % 60).padStart(2, '0');
-      return `${m}:${s}`;
-    }
-
-    function updateDisplay() {
+    function updateTimer() {
       const now = new Date();
-      if (isInSession(now)) {
-        const secondsLeft = getRemainingTime(now);
-        timer.textContent = formatTime(secondsLeft);
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
 
-        if (secondsLeft === 0) {
-          btn.style.display = 'inline-block';
-        } else {
-          btn.style.display = 'none';
-        }
+      const timer = document.getElementById("timer");
+      const claimBtn = document.getElementById("claimBtn");
 
-        messageInfo.textContent = '';
+      const remainingSeconds = (59 - seconds).toString().padStart(2, '0');
+      const remainingMinutes = (1 - (minutes % 2)).toString().padStart(2, '0');
+
+      timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+      if (isWithinActiveSlot(minutes) && seconds === 0) {
+        claimBtn.style.display = "inline-block";
       } else {
-        timer.textContent = "--:--";
-        btn.style.display = 'none';
-        result.textContent = '';
-        messageInfo.textContent = "Attention : QRBoost actif à 18h, 19h, 20h et 22h. -50% pour les 5 plus rapides !";
+        claimBtn.style.display = "none";
       }
     }
 
-    function tryLuck() {
+    function reveal() {
       const now = new Date();
-      if (now.getSeconds() === 0) {
-        result.textContent = "GAGNÉ ! Clique réussi à " + now.toTimeString().slice(0, 8);
+      const seconds = now.getSeconds();
+      const result = document.getElementById("result");
+
+      if (seconds === 0) {
+        result.textContent = `GAGNÉ ! (${new Date().toLocaleTimeString()})`;
       } else {
-        result.textContent = "RATÉ ! Clique effectué à " + now.toTimeString().slice(0, 8);
+        result.textContent = `RatÉ ! (${new Date().toLocaleTimeString()})`;
       }
     }
 
-    setInterval(updateDisplay, 1000);
-  </script>
-</body>
+    setInterval(updateTimer, 1000);
+  </script></body>
 </html>

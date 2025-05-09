@@ -2,68 +2,108 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>QR Chance - Gagne ta bière</title>
-<div style="text-align: center;">
-  <img src="fichier_00000000164c620aa67643c06852fc02.png" alt="QRChance gagnant" style="max-width: 100%; height: auto;" />
-</div>
-  
+  <title>QRChance - Gagne ta bière</title>
   <style>
     body {
       background: #0a0f1c;
       color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       text-align: center;
-      font-family: Arial, sans-serif;
-      padding-top: 100px;
+      padding: 40px;
+    }
+    img {
+      max-width: 100%;
+      height: auto;
+      margin-bottom: 30px;
+      border-radius: 10px;
     }
     #timer {
-      font-size: 60px;
-      margin-top: 20px;
+      font-size: 64px;
+      color: #00ffe1;
+      margin: 20px 0;
     }
     #result {
-      font-size: 30px;
-      margin-top: 40px;
+      font-size: 28px;
+      margin-top: 20px;
       color: #00ffcc;
     }
     button {
       padding: 15px 30px;
       font-size: 20px;
-      margin-top: 30px;
       border: none;
       background: #00ffcc;
       color: #000;
       cursor: pointer;
+      border-radius: 8px;
       display: none;
+    }
+    #message {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #ffcc00;
     }
   </style>
 </head>
 <body>
+
+  <img src="qrchance.png" alt="QRChance gagnant" />
+
   <h1>Scanne & tente ta chance !</h1>
   <p>Si tu cliques pile à 00:00, tu gagnes une bière à -50% !</p>
   <div id="timer">00:00</div>
   <button id="claimBtn" onclick="reveal()">Je tente ma chance</button>
   <div id="result"></div>
+  <div id="message"></div>
 
   <script>
+    function isInSession() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const time = hours * 60 + minutes;
+
+      const sessions = [
+        [18 * 60, 18 * 60 + 30],
+        [19 * 60, 19 * 60 + 30],
+        [20 * 60, 20 * 60 + 30],
+        [22 * 60, 22 * 60 + 30]
+      ];
+
+      return sessions.some(([start, end]) => time >= start && time < end);
+    }
+
     function updateTimer() {
       const now = new Date();
-      const minutes = now.getMinutes();
-      const seconds = now.getSeconds();
-      const timer = document.getElementById("timer");
-      const claimBtn = document.getElementById("claimBtn");
-      timer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-      // Affiche le bouton uniquement si l'heure est à XX:00
-      if (seconds === 0) {
-        claimBtn.style.display = "inline-block";
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById("timer").textContent = `${minutes}:${seconds}`;
+
+      const btn = document.getElementById("claimBtn");
+      const msg = document.getElementById("message");
+
+      if (isInSession()) {
+        msg.textContent = "";
+        btn.style.display = (seconds === "00") ? "inline-block" : "none";
       } else {
-        claimBtn.style.display = "none";
+        msg.textContent = "Attention QRBoost démarre à 18h ce soir -50% pour les 5 plus rapides 🍺";
+        btn.style.display = "none";
       }
     }
 
     function reveal() {
-      document.getElementById("result").textContent = "Félicitations ! Ta bière est à moitié prix !";
+      const now = new Date();
+      const seconds = now.getSeconds();
+      const minutes = now.getMinutes();
+      const result = document.getElementById("result");
+      if (seconds === 0) {
+        result.textContent = `GAGNÉ ! Clique validé à ${String(minutes).padStart(2, '0')}:00`;
+      } else {
+        result.textContent = `RATÉ ! Clique à ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }
     }
 
     setInterval(updateTimer, 1000);
   </script>
+
 </body>
 </html>

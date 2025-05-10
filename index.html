@@ -2,79 +2,57 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>QR Chance - Gagne ta bière</title>
+  <title>QR Chance</title>
   <style>
     body {
-      margin: 0;
       background-color: #0a0f1c;
-      font-family: 'Arial', sans-serif;
-      color: white;
-      text-align: center;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
     .container {
       position: relative;
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
+      width: 360px;
+      height: 640px;
+      background: url('qrchance.jpg') no-repeat center/contain;
     }
-    .background {
+    #timer {
+      position: absolute;
+      bottom: 105px;
+      left: 0;
       width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .overlay {
-      position: absolute;
-      top: 58.8%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 42px;
-      color: #00ffcc;
+      text-align: center;
+      font-size: 28px;
       font-weight: bold;
-    }
-    .message {
-      position: absolute;
-      top: 69%;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 22px;
-      color: #ffffff;
-      background-color: rgba(0, 0, 0, 0.4);
-      padding: 6px 12px;
-      border-radius: 8px;
+      color: #00ffcc;
+      font-family: Arial, sans-serif;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <img src="qrchance.jpg" alt="QR Chance" class="background">
-    <div id="timer" class="overlay">--:--</div>
-    <div id="message" class="message"></div>
+    <div id="timer">--:--</div>
   </div>
 
   <script>
-    const timer = document.getElementById('timer');
-    const message = document.getElementById('message');
-    const startTime = new Date().getTime();
-    const randomWinTime = Math.floor(Math.random() * (50 - 25 + 1) + 25) * 60; // entre 25 et 50 minutes en secondes
+    const timer = document.getElementById("timer");
+    const target = Math.floor(Math.random() * 20) + 25; // entre 25 et 45 min
+    let seconds = target * 60;
 
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const elapsed = Math.floor((now - startTime) / 1000); // secondes
+    const countdown = setInterval(() => {
+      const min = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const sec = String(seconds % 60).padStart(2, '0');
+      timer.textContent = `${min}:${sec}`;
 
-      const remaining = randomWinTime - elapsed;
-      const min = String(Math.floor(remaining / 60)).padStart(2, '0');
-      const sec = String(remaining % 60).padStart(2, '0');
-
-      if (remaining <= 0) {
-        timer.textContent = "00:00";
-        message.textContent = "GAGNÉ ! Ta bière est à moitié prix !";
-      } else {
-        timer.textContent = `${min}:${sec}`;
-        message.textContent = "";
+      if (seconds <= 0) {
+        clearInterval(countdown);
+        alert("Bravo ! Une bière t’est offerte à -50% !");
       }
-    }
-
-    setInterval(updateCountdown, 1000);
+      seconds--;
+    }, 1000);
   </script>
 </body>
 </html>

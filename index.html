@@ -1,82 +1,73 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>QR Chance - Card Flip</title>
+  <title>QR Chance - Carte tournante</title>
   <style>
     body {
-      margin: 0;
       background-color: #0a0f1c;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      font-family: Arial, sans-serif;
-      color: white;
-    }.scene {
-  width: 300px;
-  height: 460px;
-  perspective: 1000px;
-}
+      margin: 0;
+      flex-direction: column;
+    }
+    .card {
+      width: 300px;
+      height: 450px;
+      perspective: 1000px;
+    }
+    .inner-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: spinCard 0.2s linear infinite;
+    }
+    .face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .front {
+      background: url('card-front.png') center/cover no-repeat;
+    }
+    .back {
+      background: url('beer.png') center/cover no-repeat;
+      transform: rotateY(180deg);
+    }
 
-.card {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: flip 0.4s linear infinite;
-}
-
-.card img {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  backface-visibility: hidden;
-  border-radius: 12px;
-}
-
-.card .back {
-  transform: rotateY(180deg);
-}
-
-@keyframes flip {
-  0% { transform: rotateY(0); }
-  50% { transform: rotateY(180deg); }
-  100% { transform: rotateY(360deg); }
-}
-
-.timestamp {
-  position: absolute;
-  bottom: 20px;
-  text-align: center;
-  width: 100%;
-  font-size: 20px;
-  color: #00ffff;
-}
-
+    @keyframes spinCard {
+      0%   { transform: rotateY(0deg); }
+      100% { transform: rotateY(360deg); }
+    }
   </style>
 </head>
 <body>
-  <div class="scene">
-    <div class="card" id="card">
-      <img src="card-front.png" alt="Front" class="front" />
-      <img src="beer.png" alt="Back" class="back" />
+  <div class="card">
+    <div class="inner-card" id="card">
+      <div class="face front"></div>
+      <div class="face back"></div>
     </div>
-    <div class="timestamp" id="timestamp"></div>
-  </div>  <script>
-    const timestamp = document.getElementById('timestamp');
-    function updateTimestamp() {
-      const now = new Date();
-      const time = now.toLocaleTimeString();
-      const date = now.toLocaleDateString();
-      timestamp.textContent = `${date} ${time}`;
-    }
-    updateTimestamp();
-    setInterval(updateTimestamp, 1000);
+  </div>
 
-    // Stop animation after 10 seconds
+  <script>
     setTimeout(() => {
-      document.getElementById('card').style.animation = 'none';
+      const card = document.getElementById("card");
+      card.style.animation = "none";
+
+      // Résultat aléatoire : gagnant ou non
+      const isWinner = Math.random() < 0.5;
+      if (isWinner) {
+        card.style.transform = "rotateY(180deg)";
+      } else {
+        card.style.transform = "rotateY(0deg)";
+      }
     }, 10000);
-  </script></body>
+  </script>
+</body>
 </html>

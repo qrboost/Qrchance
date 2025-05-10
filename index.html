@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Chance - Bière à -50%</title>
+  <style>
+    body {
+      background-color: #0a0f1c;
+      color: #fff;
+      text-align: center;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background-image: url('qrchance_anim.gif');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      height: 100vh;
+      position: relative;
+    }
+    #timer {
+      position: absolute;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 40px;
+      font-weight: bold;
+      color: #00ffcc;
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 20px;
+      border-radius: 8px;
+    }
+    #result {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #00ffcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="timer">--:--</div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    const startTime = new Date();
+    const gainTimeMin = 25 * 60 * 1000;
+    const gainTimeMax = 50 * 60 * 1000;
+    const randomDelay = Math.floor(Math.random() * (gainTimeMax - gainTimeMin)) + gainTimeMin;
+
+    let beerGranted = false;
+
+    function updateTimer() {
+      const now = new Date();
+      const diff = Math.floor((now - startTime) / 1000);
+      const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+      const secs = String(diff % 60).padStart(2, '0');
+      document.getElementById("timer").textContent = `${mins}:${secs}`;
+
+      if (!beerGranted && (now - startTime >= randomDelay)) {
+        beerGranted = true;
+        document.getElementById("result").textContent = "GAGNÉ ! Bière à -50%";
+      }
+    }
+
+    setInterval(updateTimer, 1000);
+  </script>
+</body>
+</html>

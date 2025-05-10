@@ -4,55 +4,57 @@
   <meta charset="UTF-8">
   <title>QR Chance</title>
   <style>
-    body {
-      background-color: #0a0f1c;
+    html, body {
       margin: 0;
       padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      overflow: hidden;
+      background-color: #000;
     }
+
     .container {
       position: relative;
-      width: 360px;
-      height: 640px;
-      background: url('grchance.jpg') no-repeat center/contain;
+      width: 100vw;
+      height: 100vh;
     }
-    #timer {
-      position: absolute;
-      bottom: 105px;
-      left: 0;
+
+    .background-img {
       width: 100%;
-      text-align: center;
-      font-size: 28px;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .chrono {
+      position: absolute;
+      bottom: 12.5%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5em;
       font-weight: bold;
-      color: #00ffcc;
+      color: #00ffc8;
       font-family: Arial, sans-serif;
+      text-shadow: 0 0 10px #00ffc8;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div id="timer">--:--</div>
+    <img src="qrchance.jpg" alt="QR Chance" class="background-img">
+    <div class="chrono" id="timer">--:--</div>
   </div>
 
   <script>
+    const start = new Date();
     const timer = document.getElementById("timer");
-    const target = Math.floor(Math.random() * 20) + 25; // entre 25 et 45 min
-    let seconds = target * 60;
 
-    const countdown = setInterval(() => {
-      const min = String(Math.floor(seconds / 60)).padStart(2, '0');
-      const sec = String(seconds % 60).padStart(2, '0');
-      timer.textContent = `${min}:${sec}`;
+    function updateTimer() {
+      const now = new Date();
+      const diff = Math.floor((now - start) / 1000);
+      const minutes = String(Math.floor(diff / 60)).padStart(2, '0');
+      const seconds = String(diff % 60).padStart(2, '0');
+      timer.textContent = `${minutes}:${seconds}`;
+    }
 
-      if (seconds <= 0) {
-        clearInterval(countdown);
-        alert("Bravo ! Une bière t’est offerte à -50% !");
-      }
-      seconds--;
-    }, 1000);
+    setInterval(updateTimer, 1000);
   </script>
 </body>
 </html>
